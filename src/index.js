@@ -1,9 +1,8 @@
 import './index.scss';
 import axios from 'axios';
 
-axios.defaults.validateStatus = () => true;
-
 let authed = false;
+let username;
 const rootEl = document.querySelector('.root');
 const postApi = axios.create({
   baseURL: process.env.API_BASE_URL,
@@ -82,11 +81,6 @@ async function newPost() {
       body: e.target.elements.body.value,
     };
     const res = await postApi.post('/posts', payload);
-    if (res.status === 401) {
-      alert('로그인이 되지 않았습니다.');
-    } else {
-      index();
-    }
   })
   render(fragment);
 }
@@ -94,18 +88,13 @@ async function newPost() {
 async function viewPost(id) {
   const fragment = document.importNode(templates.viewPost, true);
   const res = await postApi.get(`/posts/${id}`);
-  if (res.status === 200) {
-    const { title, body, author } = res.data;
-    fragment.querySelector('.view-post__title').textContent = title;
-    fragment.querySelector('.view-post__body').textContent = body;
-    fragment.querySelector('.view-post__author').textContent = author;
-    fragment.querySelector('.view-post__back').addEventListener('click', e => {
-      index();
-    })
-  } else {
-    alert('존재하지 않는 게시물입니다.');
+  const { title, body, author } = res.data;
+  fragment.querySelector('.view-post__title').textContent = title;
+  fragment.querySelector('.view-post__body').textContent = body;
+  fragment.querySelector('.view-post__author').textContent = author;
+  fragment.querySelector('.view-post__back').addEventListener('click', e => {
     index();
-  }
+  });
   if (authed) {
     const res = await postApi.get(`/posts/${id}/comments?_expand=user`);
     const commentListEl = fragment.querySelector('.view-post__comment-list');
