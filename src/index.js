@@ -14,17 +14,7 @@ const root = document.querySelector('#root');
 
 function render(el) {
   root.textContent = '';
-  console.log(el);
   root.appendChild(el);
-}
-
-function interpolate(el, obj) {
-  Object.entries(obj).forEach(([key, value]) => {
-    const matched = el.querySelector(`[data-prop=${key}]`);
-    if (matched) {
-      matched.textContent = value;
-    }
-  })
 }
 
 const templates = {
@@ -42,7 +32,9 @@ async function index({page = 1} = {}) {
   const tbodyEl = indexEl.querySelector('.index__tbody');
   posts.forEach(({id, title}) => {
     const trEl = document.importNode(templates.indexTr, true);
-    interpolate(trEl, {id, title, author: '익명'});
+    trEl.querySelector('.index-tr__number').textContent = id;
+    trEl.querySelector('.index-tr__title').textContent = title;
+    trEl.querySelector('.index-tr__author').textContent = '익명';
     tbodyEl.appendChild(trEl);
   })
   indexEl.querySelector('.index__new-post').addEventListener('click', e => {
