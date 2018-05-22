@@ -3,3 +3,17 @@ $main-color: silver;
 body {
   background-color: $main-color;
 }
+
+.index {
+  &__new-post, &__logout-button {
+    display: none;
+    .root--authed & {
+      display: inline-block;
+    }
+  }
+  &__login-button {
+    .root--authed & {
+      display: none;
+    }
+  }
+}

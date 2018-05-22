@@ -3,18 +3,30 @@ import axios from 'axios';
 
 axios.defaults.validateStatus = () => true;
 
-const baseURL = process.env.API_BASE_URL;
-console.log(baseURL);
-
-let postApi = axios.create({
-  baseURL,
+const rootEl = document.querySelector('.root');
+const postApi = axios.create({
+  baseURL: process.env.API_BASE_URL,
 });
 
-const root = document.querySelector('#root');
+function setAuth(token) {
+  localStorage.setItem('token', token);
+  postApi.defaults.headers['Authorization'] = `Bearer ${token}`;
+  rootEl.classList.add('root--authed');
+}
+
+function removeAuth() {
+  localStorage.removeItem('token');
+  delete postApi.defaults.headers['Authorization'];
+  rootEl.classList.remove('root--authed');
+}
+
+if (localStorage.getItem('token')) {
+  setAuth(localStorage.getItem('token'));
+}
 
 function render(el) {
-  root.textContent = '';
-  root.appendChild(el);
+  rootEl.innerHTML = '';
+  rootEl.appendChild(el);
 }
 
 const templates = {
@@ -27,14 +39,14 @@ const templates = {
 
 // RORO pattern https://medium.freecodecamp.org/elegant-patterns-in-modern-javascript-roro-be01e7669cbd
 async function index({page = 1} = {}) {
-  const {data: posts} = await postApi.get(`/posts?_page=${page}`);
+  const {data: posts} = await postApi.get(`/posts?_page=${page}&_expand=user`);
   const indexEl = document.importNode(templates.index, true);
   const tbodyEl = indexEl.querySelector('.index__tbody');
-  posts.forEach(({id, title}) => {
+  posts.forEach(({id, title, user: { username }}) => {
     const trEl = document.importNode(templates.indexTr, true);
     trEl.querySelector('.index-tr__number').textContent = id;
     trEl.querySelector('.index-tr__title').textContent = title;
-    trEl.querySelector('.index-tr__author').textContent = '익명';
+    trEl.querySelector('.index-tr__author').textContent = username;
     trEl.querySelector('.index-tr__title').addEventListener('click', e => {
       viewPost(id);
     })
@@ -45,6 +57,10 @@ async function index({page = 1} = {}) {
   })
   indexEl.querySelector('.index__login-button').addEventListener('click', e => {
     login();
+  })
+  indexEl.querySelector('.index__logout-button').addEventListener('click', e => {
+    removeAuth();
+    index();
   })
   render(indexEl);
 }
@@ -99,8 +115,7 @@ async function login() {
     };
     const res = await postApi.post('/users/login', payload);
     if (res.data.token) {
-      localStorage.setItem('token', res.data.token);
-      postApi.defaults.headers['Authorization'] = `Bearer ${res.data.token}`;
+      setAuth(res.data.token);
       index();
     } else {
       alert('로그인을 실패했습니다. 다시 시도해보세요.');
