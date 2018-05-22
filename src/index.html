@@ -12,6 +12,7 @@
 
   <template id="index">
     <h1>게시판</h1>
+    <button class="index__login-button">로그인</button>
     <button class="index__new-post">새 글</button>
     <table class="index__table">
       <thead>
@@ -33,12 +34,12 @@
     </tr>
   </template>
 
-  <template id="post-form">
-    <form class="post-form">
-      <input name="title" type="text" class="post-form__title-input">
-      <textarea name="body" class="post-form__body-input"></textarea>
-      <button class="post-form__submit">전송</button>
-      <button class="post-form__cancel">취소</button>
+  <template id="new-post">
+    <form class="new-post__form">
+      <input name="title" type="text" class="new-post__title-input">
+      <textarea name="body" class="new-post__body-input"></textarea>
+      <button class="new-post__submit">전송</button>
+      <button class="new-post__cancel">취소</button>
     </form>
   </template>
 
@@ -47,6 +48,16 @@
       <button class="post-view__back">뒤로</button>
       <h1 class="post-view__title"></h1>
       <p class="post-view__body"></p>
+    </div>
+  </template>
+
+  <template id="login">
+    <div class="login">
+      <form class="login__form">
+        <input type="text" name="username">
+        <input type="password" name="password">
+        <button class="login__submit">전송</button>
+      </form>
     </div>
   </template>
 
