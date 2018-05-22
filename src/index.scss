@@ -17,3 +17,12 @@ body {
     }
   }
 }
+
+.view-post {
+  &__comment-wrap {
+    display: none;
+    .root--authed & {
+      display: block;
+    }
+  }
+}

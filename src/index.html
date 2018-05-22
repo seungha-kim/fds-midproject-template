@@ -52,6 +52,23 @@
       <h1 class="view-post__title"></h1>
       <div class="view-post__author"></div>
       <p class="view-post__body"></p>
+      <div class="view-post__comment-wrap">
+        <h2 class="view-post__comment-header">댓글 목록</h2>
+        <div class="view-post__comment-list"></div>
+        <form class="view-post__comment-form">
+          <fieldset class="view-post__comment-fieldset">
+            <input name="body" type="text" class="view-post__comment-body">
+            <button class="view-post__comment-submit">전송</button>
+          </fieldset>
+        </form>
+      </div>
+    </div>
+  </template>
+
+  <template id="comment-item">
+    <div class="comment-item">
+      <div class="comment-item__author"></div>
+      <div class="comment-item__body"></div>
     </div>
   </template>
 

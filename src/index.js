@@ -3,6 +3,7 @@ import axios from 'axios';
 
 axios.defaults.validateStatus = () => true;
 
+let authed = false;
 const rootEl = document.querySelector('.root');
 const postApi = axios.create({
   baseURL: process.env.API_BASE_URL,
@@ -12,12 +13,14 @@ function setAuth(token) {
   localStorage.setItem('token', token);
   postApi.defaults.headers['Authorization'] = `Bearer ${token}`;
   rootEl.classList.add('root--authed');
+  authed = true;
 }
 
 function removeAuth() {
   localStorage.removeItem('token');
   delete postApi.defaults.headers['Authorization'];
   rootEl.classList.remove('root--authed');
+  authed = false;
 }
 
 if (localStorage.getItem('token')) {
@@ -35,6 +38,7 @@ const templates = {
   newPost: document.querySelector('#new-post').content,
   viewPost: document.querySelector('#view-post').content,
   login: document.querySelector('#login').content,
+  commentItem: document.querySelector('#comment-item').content,
 }
 
 // RORO pattern https://medium.freecodecamp.org/elegant-patterns-in-modern-javascript-roro-be01e7669cbd
@@ -101,6 +105,25 @@ async function viewPost(id) {
   } else {
     alert('존재하지 않는 게시물입니다.');
     index();
+  }
+  if (authed) {
+    const res = await postApi.get(`/posts/${id}/comments?_expand=user`);
+    const commentListEl = viewPostEl.querySelector('.view-post__comment-list');
+    res.data.forEach(({body, user: { username }}) => {
+      const commentItemEl = document.importNode(templates.commentItem, true);
+      commentItemEl.querySelector('.comment-item__author').textContent = username;
+      commentItemEl.querySelector('.comment-item__body').textContent = body;
+      commentListEl.appendChild(commentItemEl);
+    })
+    viewPostEl.querySelector('.view-post__comment-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      e.target.querySelector('.view-post__comment-fieldset').setAttribute('disabled', '');
+      const payload = {
+        body: e.target.elements.body.value
+      };
+      await postApi.post(`/posts/${id}/comments`, payload);
+      viewPost(id);
+    })
   }
   render(viewPostEl);
 }
