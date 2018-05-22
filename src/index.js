@@ -44,8 +44,8 @@ const templates = {
 // RORO pattern https://medium.freecodecamp.org/elegant-patterns-in-modern-javascript-roro-be01e7669cbd
 async function index({page = 1} = {}) {
   const {data: posts} = await postApi.get(`/posts?_page=${page}&_expand=user`);
-  const indexEl = document.importNode(templates.index, true);
-  const tbodyEl = indexEl.querySelector('.index__tbody');
+  const fragment = document.importNode(templates.index, true);
+  const tbodyEl = fragment.querySelector('.index__tbody');
   posts.forEach(({id, title, user: { username }}) => {
     const trEl = document.importNode(templates.indexTr, true);
     trEl.querySelector('.index-tr__number').textContent = id;
@@ -56,26 +56,26 @@ async function index({page = 1} = {}) {
     })
     tbodyEl.appendChild(trEl);
   })
-  indexEl.querySelector('.index__new-post').addEventListener('click', e => {
+  fragment.querySelector('.index__new-post').addEventListener('click', e => {
     newPost();
   })
-  indexEl.querySelector('.index__login-button').addEventListener('click', e => {
+  fragment.querySelector('.index__login-button').addEventListener('click', e => {
     login();
   })
-  indexEl.querySelector('.index__logout-button').addEventListener('click', e => {
+  fragment.querySelector('.index__logout-button').addEventListener('click', e => {
     removeAuth();
     index();
   })
-  render(indexEl);
+  render(fragment);
 }
 
 async function newPost() {
-  const postFormEl = document.importNode(templates.newPost, true);
-  postFormEl.querySelector('.new-post__cancel').addEventListener('click', e => {
+  const fragment = document.importNode(templates.newPost, true);
+  fragment.querySelector('.new-post__cancel').addEventListener('click', e => {
     e.preventDefault();
     index();
   })
-  postFormEl.querySelector('.new-post__form').addEventListener('submit', async e => {
+  fragment.querySelector('.new-post__form').addEventListener('submit', async e => {
     e.preventDefault();
     const payload = {
       title: e.target.elements.title.value,
@@ -88,18 +88,18 @@ async function newPost() {
       index();
     }
   })
-  render(postFormEl);
+  render(fragment);
 }
 
 async function viewPost(id) {
-  const viewPostEl = document.importNode(templates.viewPost, true);
+  const fragment = document.importNode(templates.viewPost, true);
   const res = await postApi.get(`/posts/${id}`);
   if (res.status === 200) {
     const { title, body, author } = res.data;
-    viewPostEl.querySelector('.view-post__title').textContent = title;
-    viewPostEl.querySelector('.view-post__body').textContent = body;
-    viewPostEl.querySelector('.view-post__author').textContent = author;
-    viewPostEl.querySelector('.view-post__back').addEventListener('click', e => {
+    fragment.querySelector('.view-post__title').textContent = title;
+    fragment.querySelector('.view-post__body').textContent = body;
+    fragment.querySelector('.view-post__author').textContent = author;
+    fragment.querySelector('.view-post__back').addEventListener('click', e => {
       index();
     })
   } else {
@@ -108,14 +108,14 @@ async function viewPost(id) {
   }
   if (authed) {
     const res = await postApi.get(`/posts/${id}/comments?_expand=user`);
-    const commentListEl = viewPostEl.querySelector('.view-post__comment-list');
+    const commentListEl = fragment.querySelector('.view-post__comment-list');
     res.data.forEach(({body, user: { username }}) => {
       const commentItemEl = document.importNode(templates.commentItem, true);
       commentItemEl.querySelector('.comment-item__author').textContent = username;
       commentItemEl.querySelector('.comment-item__body').textContent = body;
       commentListEl.appendChild(commentItemEl);
     })
-    viewPostEl.querySelector('.view-post__comment-form').addEventListener('submit', async e => {
+    fragment.querySelector('.view-post__comment-form').addEventListener('submit', async e => {
       e.preventDefault();
       e.target.querySelector('.view-post__comment-fieldset').setAttribute('disabled', '');
       const payload = {
@@ -125,12 +125,12 @@ async function viewPost(id) {
       viewPost(id);
     })
   }
-  render(viewPostEl);
+  render(fragment);
 }
 
 async function login() {
-  const loginEl = document.importNode(templates.login, true);
-  loginEl.querySelector('.login__form').addEventListener('submit', async e => {
+  const fragment = document.importNode(templates.login, true);
+  fragment.querySelector('.login__form').addEventListener('submit', async e => {
     e.preventDefault();
     const payload = {
       username: e.target.elements.username.value,
@@ -144,7 +144,7 @@ async function login() {
       alert('로그인을 실패했습니다. 다시 시도해보세요.');
     }
   })
-  render(loginEl);
+  render(fragment);
 }
 
 index();

@@ -11,22 +11,24 @@
   <div class="root"></div>
 
   <template id="index">
-    <h1>게시판</h1>
-    <div class="index__menu">
-      <button class="index__login-button">로그인</button>
-      <button class="index__new-post">새 글</button>
-      <button class="index__logout-button">로그아웃</button>
+    <div class="index">
+      <h1>게시판</h1>
+      <div class="index__menu">
+        <button class="index__login-button">로그인</button>
+        <button class="index__new-post">새 글</button>
+        <button class="index__logout-button">로그아웃</button>
+      </div>
+      <table class="index__table">
+        <thead>
+          <tr>
+            <th>번호</th>
+            <th>제목</th>
+            <th>작성자</th>
+          </tr>
+        </thead>
+        <tbody class="index__tbody"></tbody>
+      </table>
     </div>
-    <table class="index__table">
-      <thead>
-        <tr>
-          <th>번호</th>
-          <th>제목</th>
-          <th>작성자</th>
-        </tr>
-      </thead>
-      <tbody class="index__tbody"></tbody>
-    </table>
   </template>
 
   <template id="index-tr">
