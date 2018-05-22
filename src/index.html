@@ -8,7 +8,48 @@
   <link rel="stylesheet" href="./index.scss">
 </head>
 <body>
-  <h1>중간 프로젝트 템플릿</h1>
+  <div id="root"></div>
+
+  <template id="index">
+    <h1>게시판</h1>
+    <button class="index__new-post">새 글</button>
+    <table class="index__table">
+      <thead>
+        <tr>
+          <th>번호</th>
+          <th>제목</th>
+          <th>작성자</th>
+        </tr>
+      </thead>
+      <tbody class="index__tbody"></tbody>
+    </table>
+  </template>
+
+  <template id="index-tr">
+    <tr class="index-tr">
+      <td class="index-tr__number" data-prop="id"></td>
+      <td class="index-tr__title" data-prop="title"></td>
+      <td class="index-tr__author" data-prop="author"></td>
+    </tr>
+  </template>
+
+  <template id="post-form">
+    <form class="post-form">
+      <input name="title" type="text" class="post-form__title-input">
+      <textarea name="body" class="post-form__body-input"></textarea>
+      <button class="post-form__submit">전송</button>
+      <button class="post-form__cancel">취소</button>
+    </form>
+  </template>
+
+  <template id="post-view">
+    <div class="post-view">
+      <button class="post-view__back">뒤로</button>
+      <h1 class="post-view__title"></h1>
+      <p class="post-view__body"></p>
+    </div>
+  </template>
+
   <script src="./index.js"></script>
 </body>
 </html>
