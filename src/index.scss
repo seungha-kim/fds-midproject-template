@@ -25,4 +25,10 @@ body {
       display: block;
     }
   }
+  &__edit-post-button {
+    display: none;
+  }
+  &--is-owner &__edit-post-button {
+    display: inline-block;
+  }
 }

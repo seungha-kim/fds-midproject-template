@@ -2,7 +2,7 @@ import './index.scss';
 import axios from 'axios';
 
 let authed = false;
-let username;
+let currentUser;
 const rootEl = document.querySelector('.root');
 const postApi = axios.create({
   baseURL: process.env.API_BASE_URL,
@@ -20,6 +20,7 @@ function removeAuth() {
   delete postApi.defaults.headers['Authorization'];
   rootEl.classList.remove('root--authed');
   authed = false;
+  currentUser = null;
 }
 
 if (localStorage.getItem('token')) {
@@ -81,13 +82,33 @@ async function newPost() {
       body: e.target.elements.body.value,
     };
     const res = await postApi.post('/posts', payload);
+    viewPost(res.data.id);
   })
   render(fragment);
 }
 
-async function viewPost(id) {
+// FIXME: fds-json-server '본인 확인 기능' 추가 후 주석 제거
+// async function editPost(id) {
+//   const fragment = document.importNode(templates.newPost, true);
+//   fragment.querySelector('.new-post__cancel').addEventListener('click', e => {
+//     e.preventDefault();
+//     index();
+//   })
+//   fragment.querySelector('.new-post__form').addEventListener('submit', async e => {
+//     e.preventDefault();
+//     const payload = {
+//       title: e.target.elements.title.value,
+//       body: e.target.elements.body.value,
+//     };
+//     const res = await postApi.patch(`/posts/${id}`, payload);
+//   })
+//   render(fragment);
+// }
+
+async function viewPost(postId) {
   const fragment = document.importNode(templates.viewPost, true);
-  const res = await postApi.get(`/posts/${id}`);
+  const viewPostEl = fragment.querySelector('.view-post');
+  const res = await postApi.get(`/posts/${postId}`);
   const { title, body, author } = res.data;
   fragment.querySelector('.view-post__title').textContent = title;
   fragment.querySelector('.view-post__body').textContent = body;
@@ -96,7 +117,7 @@ async function viewPost(id) {
     index();
   });
   if (authed) {
-    const res = await postApi.get(`/posts/${id}/comments?_expand=user`);
+    const res = await postApi.get(`/posts/${postId}/comments?_expand=user`);
     const commentListEl = fragment.querySelector('.view-post__comment-list');
     res.data.forEach(({body, user: { username }}) => {
       const commentItemEl = document.importNode(templates.commentItem, true);
@@ -110,9 +131,20 @@ async function viewPost(id) {
       const payload = {
         body: e.target.elements.body.value
       };
-      await postApi.post(`/posts/${id}/comments`, payload);
-      viewPost(id);
+      await postApi.post(`/posts/${postId}/comments`, payload);
+      viewPost(postId);
     })
+    // FIXME: fds-json-server '본인 확인 기능' 추가 후 주석 제거
+    // if (!currentUser) {
+    //   const res = await postApi.get('/me');
+    //   currentUser = res.data;
+    // }
+    // if (currentUser.username === author) {
+    //   viewPostEl.classList.add('.view-post--is-owner');
+    //   fragment.querySelector('.view-post__edit-post-button').addEventListener('click', e => {
+    //     editPost(postId);
+    //   })
+    // }
   }
   render(fragment);
 }
