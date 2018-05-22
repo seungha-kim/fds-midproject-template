@@ -21,7 +21,7 @@ const templates = {
   index: document.querySelector('#index').content,
   indexTr: document.querySelector('#index-tr').content,
   newPost: document.querySelector('#new-post').content,
-  postView: document.querySelector('#post-view').content,
+  viewPost: document.querySelector('#view-post').content,
   login: document.querySelector('#login').content,
 }
 
@@ -35,6 +35,9 @@ async function index({page = 1} = {}) {
     trEl.querySelector('.index-tr__number').textContent = id;
     trEl.querySelector('.index-tr__title').textContent = title;
     trEl.querySelector('.index-tr__author').textContent = '익명';
+    trEl.querySelector('.index-tr__title').addEventListener('click', e => {
+      viewPost(id);
+    })
     tbodyEl.appendChild(trEl);
   })
   indexEl.querySelector('.index__new-post').addEventListener('click', e => {
@@ -66,6 +69,24 @@ async function newPost() {
     }
   })
   render(postFormEl);
+}
+
+async function viewPost(id) {
+  const viewPostEl = document.importNode(templates.viewPost, true);
+  const res = await postApi.get(`/posts/${id}`);
+  if (res.status === 200) {
+    const { title, body, author } = res.data;
+    viewPostEl.querySelector('.view-post__title').textContent = title;
+    viewPostEl.querySelector('.view-post__body').textContent = body;
+    viewPostEl.querySelector('.view-post__author').textContent = author;
+    viewPostEl.querySelector('.view-post__back').addEventListener('click', e => {
+      index();
+    })
+  } else {
+    alert('존재하지 않는 게시물입니다.');
+    index();
+  }
+  render(viewPostEl);
 }
 
 async function login() {
