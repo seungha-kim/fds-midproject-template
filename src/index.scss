@@ -1,7 +1,8 @@
 $main-color: silver;
+$highlight-color: blue;
 
 body {
-  background-color: $main-color;
+  // background-color: $main-color;
 }
 
 .index {
@@ -14,6 +15,15 @@ body {
   &__login-button {
     .root--authed & {
       display: none;
+    }
+  }
+}
+
+.index-tr {
+  &__title {
+    &:hover {
+      cursor: pointer;
+      color: $highlight-color;
     }
   }
 }
